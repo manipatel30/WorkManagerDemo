@@ -9,17 +9,10 @@ import androidx.work.WorkManager
 import com.workmanagerdemo.App.Companion.context
 import com.workmanagerdemo.workers.WorkerExample
 
-/**
- * Created by Manish Patel on 10/21/2021.
- */
 class WorkerViewModel : ViewModel() {
 
     private var mWorkManager: WorkManager = WorkManager.getInstance(context)
-    private var mSavedWorkInfo: LiveData<List<WorkInfo>>
-
-    init {
-        mSavedWorkInfo = mWorkManager.getWorkInfosByTagLiveData(WorkerExample.TAG)
-    }
+    private var mSavedWorkInfo: LiveData<List<WorkInfo>> = mWorkManager.getWorkInfosByTagLiveData(WorkerExample.TAG)
 
     fun initWorker() {
         val data = Data.Builder()

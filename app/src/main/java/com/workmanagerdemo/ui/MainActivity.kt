@@ -13,7 +13,6 @@ import com.workmanagerdemo.workers.NormalWorker
 import com.workmanagerdemo.databinding.ActivityMainBinding
 import java.util.concurrent.TimeUnit
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -153,7 +152,7 @@ class MainActivity : AppCompatActivity() {
         // optionally, add constraints like power, network availability
         val constraints: Constraints = Constraints.Builder()
             .setRequiresCharging(false)
-            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
         val workerTest = OneTimeWorkRequestBuilder<WorkerExample>()

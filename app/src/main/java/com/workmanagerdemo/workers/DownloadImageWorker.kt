@@ -14,9 +14,6 @@ import java.io.BufferedInputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 
-/**
- * Created by Manish Patel on 10/21/2021.
- */
 class DownloadImageWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     override fun doWork(): Result {

@@ -13,9 +13,6 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
 
-/**
- * Created by Manish Patel on 10/21/2021.
- */
 // Extension function to save bitmap in internal storage
 fun Bitmap.saveToInternalStorage(context: Context): Uri {
 
