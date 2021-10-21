@@ -38,7 +38,7 @@
                 android:text="Unique Worker Power&amp;Internet"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="21sp" />
+                android:textSize="18sp" />
 
 
             <com.google.android.material.button.MaterialButton
@@ -57,7 +57,7 @@
                 android:text="Periodic Worker"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="21sp" />
+                android:textSize="18sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/activity_main_button_worker_with_param"
@@ -75,7 +75,7 @@
                 android:text="Unique Worker with params and Delay"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="21sp" />
+                android:textSize="18sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/activity_main_button_worker_view_model"
@@ -93,7 +93,7 @@
                 android:text="ViewModel Worker"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="21sp" />
+                android:textSize="18sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/activity_main_button_worker_download"
@@ -111,7 +111,7 @@
                 android:text="Download Image Worker"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="21sp" />
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/imageView"
@@ -126,7 +126,6 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
-
 
             <TextView
                 android:id="@+id/activity_main_tv_status"
@@ -143,6 +142,4 @@
         </RelativeLayout>
 
     </ScrollView>
-
-
 </RelativeLayout>

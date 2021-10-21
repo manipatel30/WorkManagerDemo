@@ -1,4 +1,4 @@
-package com.workmanagerdemo
+package com.workmanagerdemo.ui
 
 import android.net.Uri
 import android.os.Bundle
@@ -6,6 +6,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.work.*
+import com.workmanagerdemo.App
+import com.workmanagerdemo.App.Companion.context
+import com.workmanagerdemo.workers.DownloadImageWorker
+import com.workmanagerdemo.workers.WorkerExample
 import com.workmanagerdemo.databinding.ActivityMainBinding
 import com.workmanagerdemo.extensions.toast
 import java.util.concurrent.TimeUnit
@@ -35,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
 
-        // Worker Unique Power&Internet
+        // Worker Unique Power & Internet
         binding.activityMainButtonWorkerUnique.setOnClickListener {
             initWorkerUniqueWithPowerAndConnectivity()
         }
@@ -45,18 +49,18 @@ class MainActivity : AppCompatActivity() {
             initPeriodicWorker()
         }
 
-        // Periodic worker
+        // Unique worker with params and delay
         binding.activityMainButtonWorkerWithParam.setOnClickListener {
             initWorkerUniqueWithParamenters()
         }
 
-        // Periodic worker
+        // ViewModel worker
         binding.activityMainButtonWorkerViewModel.setOnClickListener {
             configViewModel()
             initWorkerViewModel()
         }
 
-        //Download Image worker
+        // Download Image worker
         binding.activityMainButtonWorkerDownload.setOnClickListener {
             initDownloadWorker()
         }
@@ -90,13 +94,13 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         // Enqueue the work
-        WorkManager.getInstance().enqueue((downloadImageWork))
+        WorkManager.getInstance(context).enqueue((downloadImageWork))
 
         // Get the work status using live data
-        WorkManager.getInstance().getWorkInfoByIdLiveData(downloadImageWork.id).observe(this, Observer { workInfo ->
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(downloadImageWork.id).observe(this, { workInfo ->
 
             // Toast the work state
-            toast(workInfo.state.name)
+            showWorkerStatus(workInfo.state.name)
 
             if (workInfo != null) {
 
@@ -152,7 +156,7 @@ class MainActivity : AppCompatActivity() {
             .setConstraints(constraints).build()
 
         // Now, enqueue your work
-        WorkManager.getInstance().beginUniqueWork(WorkerExample.TAG, ExistingWorkPolicy.REPLACE, workerTest)
+        WorkManager.getInstance(context).beginUniqueWork(WorkerExample.TAG, ExistingWorkPolicy.REPLACE, workerTest)
     }
 
     /**
@@ -161,12 +165,12 @@ class MainActivity : AppCompatActivity() {
      * If we want to cancel a worker we can add a Tag and cancel it by its Tag
      */
     private fun initPeriodicWorker() {
-        val mWorkManager = WorkManager.getInstance()
-        mWorkManager?.cancelAllWorkByTag(WorkerExample.TAG)
+        val mWorkManager = WorkManager.getInstance(context)
+        mWorkManager.cancelAllWorkByTag(WorkerExample.TAG)
 
         val periodicBuilder = PeriodicWorkRequest.Builder(WorkerExample::class.java, 15, TimeUnit.MINUTES)
         val myWork = periodicBuilder.addTag(WorkerExample.TAG).build()
-        mWorkManager?.enqueue(myWork)
+        mWorkManager.enqueue(myWork)
     }
 
     /**
@@ -196,9 +200,8 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         // Now, enqueue your work
-        WorkManager.getInstance().enqueue(workerTest)
+        WorkManager.getInstance(context).enqueue(workerTest)
     }
-
 
 
     private fun initWorkerViewModel() {

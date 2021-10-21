@@ -1,4 +1,4 @@
-package com.workmanagerdemo
+package com.workmanagerdemo.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -6,13 +6,15 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.workmanagerdemo.App.Companion.context
+import com.workmanagerdemo.workers.WorkerExample
 
 /**
- * Created by Manish Patel on 5/23/2019.
+ * Created by Manish Patel on 10/21/2021.
  */
 class WorkerViewModel : ViewModel() {
 
-    private var mWorkManager: WorkManager = WorkManager.getInstance()
+    private var mWorkManager: WorkManager = WorkManager.getInstance(context)
     private var mSavedWorkInfo: LiveData<List<WorkInfo>>
 
     init {

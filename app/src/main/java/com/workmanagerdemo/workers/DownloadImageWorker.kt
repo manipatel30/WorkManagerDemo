@@ -1,4 +1,4 @@
-package com.workmanagerdemo
+package com.workmanagerdemo.workers
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -15,7 +15,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 
 /**
- * Created by Manish Patel on 5/23/2019.
+ * Created by Manish Patel on 10/21/2021.
  */
 class DownloadImageWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
@@ -36,7 +36,7 @@ class DownloadImageWorker(context: Context, params: WorkerParameters) : Worker(c
             connection.connect()
 
             // Get the input stream from http url connection
-            val inputStream = connection.getInputStream()
+            val inputStream = connection.inputStream
 
             // Initialize a new BufferedInputStream from InputStream
             val bufferedInputStream = BufferedInputStream(inputStream)
