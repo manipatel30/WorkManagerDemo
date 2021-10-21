@@ -20,46 +20,33 @@ import java.net.HttpURLConnection
 class DownloadImageWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     override fun doWork(): Result {
-
-        // Get data
         val imageUrl = inputData.getString(ARG_EXTRA_PARAM)
+        Log.e(WorkerExample.TAG, "Start downloading image from imageUrl= $imageUrl")
         val url = stringToURL(imageUrl)
-
-        // IMPORTANT - Put internet permission on manifest file
         var connection: HttpURLConnection? = null
-
         try {
-            // Initialize a new http url connection
             connection = url?.openConnection() as HttpURLConnection
-
-            // Connect the http url connection
             connection.connect()
-
-            // Get the input stream from http url connection
             val inputStream = connection.inputStream
-
-            // Initialize a new BufferedInputStream from InputStream
             val bufferedInputStream = BufferedInputStream(inputStream)
-
-            // Convert BufferedInputStream to Bitmap object
 
             // Return the downloaded bitmap
             val bmp: Bitmap? = BitmapFactory.decodeStream(bufferedInputStream)
             val uri: Uri? = bmp?.saveToInternalStorage(applicationContext)
 
-            Log.d("download", "success")
+            Log.e(TAG, "success")
             // Return the success with output data
             return Result.success(createOutputData(uri))
 
         } catch (e: IOException) {
             e.printStackTrace()
-            Log.d("download", e.toString())
+            Log.e(TAG, e.toString())
 
         } finally {
             // Disconnect the http url connection
             connection?.disconnect()
         }
-        Log.d("download", "failed")
+        Log.e(TAG, "failed")
         return Result.failure(createOutputData(null))
     }
 

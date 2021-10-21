@@ -6,17 +6,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.work.*
-import com.workmanagerdemo.App
 import com.workmanagerdemo.App.Companion.context
 import com.workmanagerdemo.workers.DownloadImageWorker
 import com.workmanagerdemo.workers.WorkerExample
+import com.workmanagerdemo.workers.NormalWorker
 import com.workmanagerdemo.databinding.ActivityMainBinding
-import com.workmanagerdemo.extensions.toast
 import java.util.concurrent.TimeUnit
 
-/**
- * Created by Manish Patel on 10/21/2021.
- */
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,14 +28,14 @@ class MainActivity : AppCompatActivity() {
         setupUI()
     }
 
-    private fun configViewModel() {
-        // Show work status
-        mViewModel.getOutputWorkInfo().observe(this, observer)
-    }
-
     private fun setupUI() {
 
-        // Worker Unique Power & Internet
+        // Normal worker
+        binding.activityMainButtonNormalWorker.setOnClickListener {
+            initWorkerNormal()
+        }
+
+        // Worker with constraints (Power & Internet)
         binding.activityMainButtonWorkerUnique.setOnClickListener {
             initWorkerUniqueWithPowerAndConnectivity()
         }
@@ -51,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         // Unique worker with params and delay
         binding.activityMainButtonWorkerWithParam.setOnClickListener {
-            initWorkerUniqueWithParamenters()
+            initWorkerUniqueWithParameters()
         }
 
         // ViewModel worker
@@ -64,6 +60,11 @@ class MainActivity : AppCompatActivity() {
         binding.activityMainButtonWorkerDownload.setOnClickListener {
             initDownloadWorker()
         }
+    }
+
+    private fun configViewModel() {
+        // Show work status
+        mViewModel.getOutputWorkInfo().observe(this, observer)
     }
 
     private fun initDownloadWorker() {
@@ -97,47 +98,50 @@ class MainActivity : AppCompatActivity() {
         WorkManager.getInstance(context).enqueue((downloadImageWork))
 
         // Get the work status using live data
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(downloadImageWork.id).observe(this, { workInfo ->
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(downloadImageWork.id)
+            .observe(this, { workInfo ->
 
-            // Toast the work state
-            showWorkerStatus(workInfo.state.name)
+                showWorkerStatus(workInfo.state.name)
 
-            if (workInfo != null) {
-
-                if (workInfo.state == WorkInfo.State.ENQUEUED) {
-                    // Show the work state in text view
-                    showWorkerStatus("Download enqueued.")
-                } else if (workInfo.state == WorkInfo.State.BLOCKED) {
-                    showWorkerStatus("Download blocked.")
-                } else if (workInfo.state == WorkInfo.State.RUNNING) {
-                    showWorkerStatus("Download running.")
-                }
-            }
-
-            // When work finished
-            if (workInfo != null && workInfo.state.isFinished) {
-
-                if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-                    showWorkerStatus("Download successful.")
-
-                    // Get the output data
-                    val successOutputData = workInfo.outputData
-                    val uriText = successOutputData.getString(DownloadImageWorker.OUTPUT_DATA_PARAM)
-
-                    // If uri is not null then show it
-                    uriText?.apply {
-                        // If download finished successfully then show the downloaded image in image view
-                        binding.imageView.setImageURI(Uri.parse(uriText))
-                        showWorkerStatus(uriText)
+                workInfo?.let {
+                    when (it.state) {
+                        WorkInfo.State.ENQUEUED ->  showWorkerStatus("Download enqueued.")
+                        WorkInfo.State.BLOCKED -> showWorkerStatus("Download blocked.")
+                        WorkInfo.State.RUNNING -> showWorkerStatus("Download running.")
                     }
-                } else if (workInfo.state == WorkInfo.State.FAILED) {
-                    showWorkerStatus("Failed to download.")
-                } else if (workInfo.state == WorkInfo.State.CANCELLED) {
-                    showWorkerStatus("Work request cancelled.")
                 }
-            }
-        })
+
+                // When work finished
+                if (workInfo != null && workInfo.state.isFinished) {
+
+                    if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                        showWorkerStatus("Download successful.")
+
+                        // Get the output data
+                        val successOutputData = workInfo.outputData
+                        val uriText =
+                            successOutputData.getString(DownloadImageWorker.OUTPUT_DATA_PARAM)
+
+                        // If uri is not null then show it
+                        uriText?.apply {
+                            // If download finished successfully then show the downloaded image in image view
+                            binding.imageView.setImageURI(Uri.parse(uriText))
+                            showWorkerStatus(uriText)
+                        }
+                    } else if (workInfo.state == WorkInfo.State.FAILED) {
+                        showWorkerStatus("Failed to download.")
+                    } else if (workInfo.state == WorkInfo.State.CANCELLED) {
+                        showWorkerStatus("Work request cancelled.")
+                    }
+                }
+            })
     }
+
+    private fun initWorkerNormal() {
+        val worker = OneTimeWorkRequestBuilder<NormalWorker>().build()
+        WorkManager.getInstance(context).enqueue(worker)
+    }
+
 
     /**
      * In this example this work was called when the device is connected to Internet and
@@ -148,15 +152,15 @@ class MainActivity : AppCompatActivity() {
     private fun initWorkerUniqueWithPowerAndConnectivity() {
         // optionally, add constraints like power, network availability
         val constraints: Constraints = Constraints.Builder()
-            .setRequiresCharging(true)
-            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresCharging(false)
+            .setRequiredNetworkType(NetworkType.UNMETERED)
             .build()
 
         val workerTest = OneTimeWorkRequestBuilder<WorkerExample>()
             .setConstraints(constraints).build()
 
         // Now, enqueue your work
-        WorkManager.getInstance(context).beginUniqueWork(WorkerExample.TAG, ExistingWorkPolicy.REPLACE, workerTest)
+        WorkManager.getInstance(context).enqueue(workerTest)
     }
 
     /**
@@ -168,7 +172,8 @@ class MainActivity : AppCompatActivity() {
         val mWorkManager = WorkManager.getInstance(context)
         mWorkManager.cancelAllWorkByTag(WorkerExample.TAG)
 
-        val periodicBuilder = PeriodicWorkRequest.Builder(WorkerExample::class.java, 15, TimeUnit.MINUTES)
+        val periodicBuilder =
+            PeriodicWorkRequest.Builder(WorkerExample::class.java, 1, TimeUnit.MINUTES)
         val myWork = periodicBuilder.addTag(WorkerExample.TAG).build()
         mWorkManager.enqueue(myWork)
     }
@@ -182,11 +187,11 @@ class MainActivity : AppCompatActivity() {
      * And in the worker to get the data:
      *   val param =  inputData.getString(ARG_EXTRA_PARAM)
      */
-    private fun initWorkerUniqueWithParamenters() {
+    private fun initWorkerUniqueWithParameters() {
         val data = Data.Builder()
 
         //Add parameter in Data class. just like bundle. You can also add Boolean and Number in parameter.
-        data.putString(WorkerExample.ARG_EXTRA_PARAM, "initWorkerUniqueWithParamenters")
+        data.putString(WorkerExample.ARG_EXTRA_PARAM, "Hello Word!")
 
         //Set Input Data
         val workerTest = OneTimeWorkRequestBuilder<WorkerExample>()
@@ -216,7 +221,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 // We only care about the one output status.
                 // Every continuation has only one worker tagged TAG_OUTPUT
-                val workInfo = it.get(0)
+                val workInfo = it[0]
 
                 when (workInfo.state) {
                     WorkInfo.State.ENQUEUED -> {
@@ -229,8 +234,10 @@ class MainActivity : AppCompatActivity() {
 
                     WorkInfo.State.SUCCEEDED -> {
                         val successOutputData = workInfo.outputData
-                        val firstValue = successOutputData.getString(WorkerExample.OUTPUT_DATA_PARAM1)
-                        val secondValue = successOutputData.getInt(WorkerExample.OUTPUT_DATA_PARAM2, -1)
+                        val firstValue =
+                            successOutputData.getString(WorkerExample.OUTPUT_DATA_PARAM1)
+                        val secondValue =
+                            successOutputData.getInt(WorkerExample.OUTPUT_DATA_PARAM2, -1)
 
                         showWorkerStatus("SUCCEEDED: Output $firstValue - $secondValue")
                     }
