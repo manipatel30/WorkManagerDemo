@@ -16,6 +16,6 @@ class NormalWorker(context: Context, workerParameters: WorkerParameters) :
     }
 
     companion object {
-        val TAG = WorkerExample::class.java.simpleName
+        val TAG = MyWorker::class.java.simpleName
     }
 }

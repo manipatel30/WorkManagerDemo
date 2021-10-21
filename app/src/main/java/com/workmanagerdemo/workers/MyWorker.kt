@@ -6,7 +6,7 @@ import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
-class WorkerExample(context: Context, params: WorkerParameters) : Worker(context, params) {
+class MyWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
     override fun doWork(): Result {
 
         // Get data
@@ -15,9 +15,9 @@ class WorkerExample(context: Context, params: WorkerParameters) : Worker(context
         Thread.sleep(10000)
 
         //do the work you want done in the background here
-        Log.e(TAG, "Worker Test: doWork() called & param = $param")
+        Log.e(TAG, "MyWorker: doWork() called & param = $param")
 
-        val outputData = createOutputData("Hello From WorkerExample", 100)
+        val outputData = createOutputData("Hello From MyWorker", 100)
         return Result.success(outputData)
     }
 
@@ -29,7 +29,7 @@ class WorkerExample(context: Context, params: WorkerParameters) : Worker(context
     }
 
     companion object {
-        val TAG = WorkerExample::class.java.simpleName
+        val TAG = MyWorker::class.java.simpleName
         val ARG_EXTRA_PARAM = "ARG_EXTRA_PARAM"
         val OUTPUT_DATA_PARAM1 = "OUTPUT_DATA_PARAM1"
         val OUTPUT_DATA_PARAM2 = "OUTPUT_DATA_PARAM2"

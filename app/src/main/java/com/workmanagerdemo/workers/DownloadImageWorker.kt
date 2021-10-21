@@ -14,11 +14,11 @@ import java.io.BufferedInputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 
-class DownloadImageWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+class DownloadImageWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
 
     override fun doWork(): Result {
         val imageUrl = inputData.getString(ARG_EXTRA_PARAM)
-        Log.e(WorkerExample.TAG, "Start downloading image from imageUrl= $imageUrl")
+        Log.e(MyWorker.TAG, "Start downloading image from imageUrl= $imageUrl")
         val url = stringToURL(imageUrl)
         var connection: HttpURLConnection? = null
         try {

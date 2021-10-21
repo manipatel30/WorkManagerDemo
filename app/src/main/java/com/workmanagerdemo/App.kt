@@ -7,7 +7,6 @@ import android.location.Location
 
 class App : Application() {
 
-
     override fun onCreate() {
         super.onCreate()
 

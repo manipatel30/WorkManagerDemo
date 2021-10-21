@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.work.*
 import com.workmanagerdemo.App.Companion.context
 import com.workmanagerdemo.workers.DownloadImageWorker
-import com.workmanagerdemo.workers.WorkerExample
+import com.workmanagerdemo.workers.MyWorker
 import com.workmanagerdemo.workers.NormalWorker
 import com.workmanagerdemo.databinding.ActivityMainBinding
 import java.util.concurrent.TimeUnit
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    val mViewModel: WorkerViewModel by viewModels()
+    val mViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val workerTest = OneTimeWorkRequestBuilder<WorkerExample>()
+        val workerTest = OneTimeWorkRequestBuilder<MyWorker>()
             .setConstraints(constraints).build()
 
         // Now, enqueue your work
@@ -169,11 +169,11 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initPeriodicWorker() {
         val mWorkManager = WorkManager.getInstance(context)
-        mWorkManager.cancelAllWorkByTag(WorkerExample.TAG)
+        mWorkManager.cancelAllWorkByTag(MyWorker.TAG)
 
         val periodicBuilder =
-            PeriodicWorkRequest.Builder(WorkerExample::class.java, 1, TimeUnit.MINUTES)
-        val myWork = periodicBuilder.addTag(WorkerExample.TAG).build()
+            PeriodicWorkRequest.Builder(MyWorker::class.java, 10, TimeUnit.MINUTES)
+        val myWork = periodicBuilder.addTag(MyWorker.TAG).build()
         mWorkManager.enqueue(myWork)
     }
 
@@ -190,10 +190,10 @@ class MainActivity : AppCompatActivity() {
         val data = Data.Builder()
 
         //Add parameter in Data class. just like bundle. You can also add Boolean and Number in parameter.
-        data.putString(WorkerExample.ARG_EXTRA_PARAM, "Hello Word!")
+        data.putString(MyWorker.ARG_EXTRA_PARAM, "Hello Word!")
 
         //Set Input Data
-        val workerTest = OneTimeWorkRequestBuilder<WorkerExample>()
+        val workerTest = OneTimeWorkRequestBuilder<MyWorker>()
             .setInputData(data.build())
             .setInitialDelay(10, TimeUnit.SECONDS)
             .setBackoffCriteria(
@@ -234,9 +234,9 @@ class MainActivity : AppCompatActivity() {
                     WorkInfo.State.SUCCEEDED -> {
                         val successOutputData = workInfo.outputData
                         val firstValue =
-                            successOutputData.getString(WorkerExample.OUTPUT_DATA_PARAM1)
+                            successOutputData.getString(MyWorker.OUTPUT_DATA_PARAM1)
                         val secondValue =
-                            successOutputData.getInt(WorkerExample.OUTPUT_DATA_PARAM2, -1)
+                            successOutputData.getInt(MyWorker.OUTPUT_DATA_PARAM2, -1)
 
                         showWorkerStatus("SUCCEEDED: Output $firstValue - $secondValue")
                     }
